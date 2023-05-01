@@ -1,0 +1,232 @@
+﻿@using NavesPortalforWebWithCoreMvc.Controllers.PMS
+@using NavesPortalforWebWithCoreMvc.Models
+@using Syncfusion.EJ2
+@using Syncfusion.EJ2.Notifications;
+@using Syncfusion.EJ2.QueryBuilder;
+@model NavesPortalforWebWithCoreMvc.ViewModels.DisProjectRegistrationViewModel;
+
+@{
+    ViewBag.PageTitle = "DIS > Project Registration";
+    ViewBag.PlatformName = "DIS";
+    ViewBag.MenuName = "Project Registration & Planning";
+    ViewBag.FunctionName = "New";
+}
+
+@section ContentsSection{
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="ps-2 pageContentTitle">
+            <h3>@ViewBag.MenuName</h3>
+        </div>
+        <div class="ps-1">
+        </div>
+    </div>
+
+    <div class="mx-0 row bprder border-bottom bg-title">
+        <label class="col-sm-12 col-form-label text-center fw-bolder">Project</label>
+    </div>
+    <div class="mx-0 row bprder border-bottom">
+        <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Project ID</label>
+        <div class="col-sm-6 align-self-center ">
+            <ejs-autocomplete id="acProjectId" dataSource="@ViewBag.ProjectId" ejs-for="@Model.PROJECT_INFO.PROJECT_ID" placeholder="Search Project ID..." autofill="true" filterType="Contains"
+                          cssClass="inputable"
+                          highlight="true"
+                          suggestionCount="20"
+                          minLength="2"
+                          popupHeight="300px"
+                          popupWidth="600px"
+                          required
+                          headerTemplate="@Html.Raw("<div class=\"row m-2 p-1 fs-5 border-bottom border-2 bg-create-title\"><div class=\"col-2 text-center\">Project ID</div><div class=\"col-7 text-center\">Project Title</div><div class=\"col-3 text-center\">Project Type</div></div>")"
+                          itemTemplate="@Html.Raw("<div class=\"row p-1 border-bottom border-1\"><div class=\"col-2 text-center\">${PROJECT_ID}</div><div class=\"col-7\">${PROJECT_TITLE}</div><div class=\"col-3 text-center\">${PROJECT_TYPE}</div></div>")"
+                          change="OnAutoComplateProjectIdChange">
+                <e-autocomplete-fields value="PROJECT_ID"></e-autocomplete-fields>
+            </ejs-autocomplete>
+            <ejs-textbox type="text" id="txtProjectIdx" cssClass="d-none"></ejs-textbox>
+        </div>
+        <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Status</label>
+        <div class="col-sm-1 align-self-center ">
+            @Model.DIS_PROJECT.STATUS
+        </div>
+    </div>
+
+    <div class="mx-0 row bprder border-bottom">
+        <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Project Title</label>
+        <div class="col-sm-10 align-self-center">
+            @Model.PROJECT_INFO.PROJECT_TITLE
+        </div>
+    </div>
+
+    <div class="mx-0 row bprder border-bottom">
+        <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Term of Project</label>
+        <div class="col-sm-10 align-self-center">
+            @Model.PROJECT_INFO.TERM_OF_PROJECT
+        </div>
+    </div>
+
+    <div class="mx-0 row bprder border-bottom">
+        <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Project Total Amount</label>
+        <div class="col-sm-10 align-self-center">
+            @Model.PROJECT_INFO.CURRENCY_SYMBOL
+            @string.Format("{0:#,0}",Model.PROJECT_INFO.PROJECT_TOTAL_AMOUNT)
+        </div>
+    </div>
+
+    <div class="mx-0 row bprder border-bottom">
+        <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Suveyor(PM)</label>
+        <div class="col-sm-10 align-self-center">
+            @Model.PROJECT_INFO.USRE_NAME_EN
+        </div>
+    </div>
+
+    <div class="mx-0 row bprder border-bottom">
+        <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Surveyor (Working Group)</label>
+        <div class="col-sm-10 align-self-center">
+            @{
+                if (Model.PROJECT_PIC != null)
+                {
+                    foreach (TNAV_PROJECT_PIC pic in Model.PROJECT_PIC)
+                    {
+                        <span>@pic.USRE_NAME_EN, </span>
+                    }
+                }
+            }
+        </div>
+    </div>
+
+    <div class="mx-0 row bprder border-bottom">
+        <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Quantity</label>
+        <div class="col-sm-10 align-self-center">
+            @Model.PROJECT_INFO.PROJECT_QUANTITY
+        </div>
+    </div>
+
+    <form id="frmDisProjectPlanning" method="post" asp-controller="DisProjectPlanning" asp-action="Create">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="text" asp-for="DIS_PROJECT.PROJECT_ID" id="txtProjectIdx" value="@Model.PROJECT_INFO.PROJECT_ID" class="d-none" />
+        <input type="text" asp-for="DIS_PROJECT.PROJECT_IDX" id="txtProjectIdx" value="@Model.PROJECT_INFO.PROJECT_IDX" class="d-none" />
+
+        <div class="mx-0 mt-3  row bprder border-bottom bg-title">
+            <label class="col-sm-12 col-form-label text-center fw-bolder">Project progress by key event</label>
+        </div>
+        <div class="align-self-center mx-0 row bprder border-bottom">
+            <label class="col col-form-label text-end fw-bolder bg-create-title">Work Step</label>
+            <div class="col align-self-center text-center fw-bolder">
+                Disassemble Piping System
+            </div>
+            <div class="col align-self-center text-center fw-bolder">
+                Assemble Piping System
+            </div>
+            <div class="col align-self-center text-center fw-bolder">
+                Leak Test
+            </div>
+            <div class="col align-self-center text-center fw-bolder">
+                Function Test
+            </div>
+            <div class="col align-self-center text-center fw-bolder">
+                Trial
+            </div>
+        </div>
+        <div class="mx-0 row bprder border-bottom">
+            <label class="col col-form-label text-end fw-bolder bg-create-title">Estimated Date</label>
+            <div class="col align-self-center ">
+                <ejs-datepicker id="dpEndDate1" ejs-for="DIS_PROJECT.DISASSEMBLE_PIPING_EST" format="yyyy-MM-dd" cssClass="inputable"></ejs-datepicker>
+            </div>
+            <div class="col align-self-center">
+                <ejs-datepicker id="dpEndDate2" ejs-for="DIS_PROJECT.ASSEMBLE_PIPING_EST" format="yyyy-MM-dd" cssClass="inputable"></ejs-datepicker>
+            </div>
+            <div class="col align-self-center ">
+                <ejs-datepicker id="dpEndDate3" ejs-for="DIS_PROJECT.LEAK_EST" format="yyyy-MM-dd" cssClass="inputable"></ejs-datepicker>
+            </div>
+            <div class="col align-self-center ">
+                <ejs-datepicker id="dpEndDate4" ejs-for="DIS_PROJECT.FUNC_EST" format="yyyy-MM-dd" cssClass="inputable"></ejs-datepicker>
+            </div>
+            <div class="col align-self-center ">
+                <ejs-datepicker id="dpEndDate5" ejs-for="DIS_PROJECT.TRIAL_EST" format="yyyy-MM-dd" cssClass="inputable"></ejs-datepicker>
+            </div>
+        </div>
+        <div class="mx-0 row bprder border-bottom">
+            <label class="col col-form-label text-end fw-bolder bg-create-title">Actual Date</label>
+            <div class="col align-self-center ">
+                <ejs-datepicker id="dpActualDate1" ejs-for="DIS_PROJECT.DISASSEMBLE_PIPING_ACT" format="yyyy-MM-dd" cssClass="inputable"></ejs-datepicker>
+            </div>
+            <div class="col align-self-center ">
+                <ejs-datepicker id="dpActualDate2" ejs-for="DIS_PROJECT.ASSEMBLE_PIPING_ACT" format="yyyy-MM-dd" cssClass="inputable"></ejs-datepicker>
+            </div>
+            <div class="col align-self-center ">
+                <ejs-datepicker id="dpActualDate3" ejs-for="DIS_PROJECT.LEAK_ACT" format="yyyy-MM-dd" cssClass="inputable"></ejs-datepicker>
+            </div>
+            <div class="col align-self-center ">
+                <ejs-datepicker id="dpActualDate4" ejs-for="DIS_PROJECT.FUNC_ACT" format="yyyy-MM-dd" cssClass="inputable"></ejs-datepicker>
+            </div>
+            <div class="col align-self-center ">
+                <ejs-datepicker id="dpActualDate6" ejs-for="DIS_PROJECT.TRIAL_ACT" format="yyyy-MM-dd" cssClass="inputable"></ejs-datepicker>
+            </div>
+        </div>
+    </form>
+
+    <div class="mx-0 mt-3  row bprder border-bottom bg-create-title">
+        <label for="" class="col-sm-12 col-form-label text-center fw-bolder">Work Scope</label>
+    </div>
+
+    <div class="mx-0 bprder border-bottom">
+        <ejs-grid id="Grid" dataSource="@ViewBag.WorkScope" allowSorting="true" enableInfiniteScrolling="true">
+            <e-grid-columns>
+                <e-grid-column field="NO" headerText="No" customAttributes=@(new{@class="customCss"}) textAlign="Center" width="80"></e-grid-column>
+                <e-grid-column field="WORK_ID" headerText="Work ID" customAttributes=@(new{@class="customCss"}) textAlign="Center" width="150"></e-grid-column>
+                <e-grid-column field="JOB_ID" headerText="Job ID" customAttributes=@(new{@class="customCss"}) textAlign="Center" width="150"></e-grid-column>
+                <e-grid-column field="VESSEL_NAME_KR" headerText="Vessen Name" customAttributes=@(new{@class="customCss"}) textAlign="Center" width="150"></e-grid-column>
+                <e-grid-column field="CODE" headerText="Vessel Category" customAttributes=@(new{@class="customCss"}) textAlign="Center" width="150"></e-grid-column>
+                <e-grid-column field="WORK_QUANTITY" headerText="Q'ty" customAttributes=@(new{@class="customCss"}) textAlign="Center" width="150"></e-grid-column>
+                <e-grid-column field="DESCRIPTION" headerText="Description" customAttributes=@(new{@class="customCss"}) textAlign="Center" width="150"></e-grid-column>
+            </e-grid-columns>
+        </ejs-grid>
+    </div>
+
+    <div class="pt-2 px-3">
+        <div class="float-start row g-0">
+            <div class="col-auto pe-2">
+                <a id="btnShowLog" class="btn btn-success btn-medium rounded-pill waves-effect waves-light btn-medium" style="width:120px;">Show Log</a>
+            </div>
+            <div class="col-auto pe-2">
+            </div>
+            <div class="col-auto">
+            </div>
+        </div>
+        <div class="float-end row g-0">
+            <div class="col-auto pe-2">
+            </div>
+            <div class="col-auto pe-2">
+                <button id="btnSave" type="submit" form="frmDisProjectPlanning" class="btn btn-primary rounded-pill waves-effect waves-light btn-medium">SAVE</button>
+            </div>
+            <div class="col-auto">
+                <a asp-controller="DisProjectMonitoring" asp-action="Index" id="btnList" class="btn btn-primary rounded-pill waves-effect waves-light btn-medium">LIST</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function OnAutoComplateProjectIdChange(args) {
+            if (args.value.length >= 2) {
+                window.location.href = "/DisProjectPlanning/Detail/" + args.itemData.PROJECT_IDX;
+            }
+        }
+
+    </script>
+}
+    @section Scripts{
+    <script>
+        // Show Log Button
+        $("#btnShowLog").click(function () {
+            var W = (screen.availWidth * 0.5);
+            var H = 750;
+
+            var popupX = (screen.availWidth / 2) - (W / 2);
+            var popupY = (screen.availHeight / 2) - (H / 2);
+
+            var opt = "status=no,width=" + W + "px, height=" + H + "px, left=" + popupX + ", top=" + popupY + ",scrollbars=yes";
+            var popup = window.open('@Url.Action("ShowLog", "Common", new{id = Model.PROJECT_INFO.PROJECT_IDX, platform = "DIS"})', 'LogList', opt);
+
+            popup.opener = window;
+            popup.focus();
+        });
+    </script>
+}

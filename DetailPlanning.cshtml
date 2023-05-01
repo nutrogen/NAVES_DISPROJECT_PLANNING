@@ -1,0 +1,221 @@
+﻿@using NavesPortalforWebWithCoreMvc.Controllers.PMS
+@using NavesPortalforWebWithCoreMvc.Models
+@using Syncfusion.EJ2
+@using Syncfusion.EJ2.Notifications;
+@using Syncfusion.EJ2.QueryBuilder;
+@model NavesPortalforWebWithCoreMvc.ViewModels.DisPlanningViewModel;
+
+@{
+    ViewBag.PageTitle = "DIS > Project Registration";
+    ViewBag.PlatformName = "DIS";
+    ViewBag.MenuName = "Project Planning";
+    ViewBag.FunctionName = "New";
+}
+
+@section ContentsSection{
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="ps-2 pageContentTitle">
+            <h3>@ViewBag.MenuName</h3>
+        </div>
+        <div class="ps-1">
+        </div>
+    </div>
+
+    <div class="mx-0 row bprder border-bottom">
+        <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Work ID</label>
+        <div class="col-sm-4 align-self-center">
+            <ejs-autocomplete id="acWorkId" dataSource="@ViewBag.WorkId" ejs-for="PROJECT_INFO.WORK_ID" placeholder="Search Work ID..." autofill="true" filterType="Contains"
+                          cssClass="inputable"
+                          highlight="true"
+                          suggestionCount="20"
+                          minLength="2"
+                          popupHeight="300px"
+                          popupWidth="600px"
+                          required
+                          headerTemplate="@Html.Raw("<div class=\"row m-2 p-1 fs-5 border-bottom border-2 bg-create-title\"><div class=\"col-2 text-center\">Work ID</div><div class=\"col-7 text-center\">Vessel Name</div><div class=\"col-3 text-center\">Project Category</div></div>")"
+                          itemTemplate="@Html.Raw("<div class=\"row p-1 border-bottom border-1\"><div class=\"col-2 text-center\">${WORK_ID}</div><div class=\"col-7\">${VESSEL_NAME_KR}</div><div class=\"col-3 text-center\">${PROJECT_CATEGORY}</div></div>")"
+                          change="OnAutoComplateProjectIdChange">
+                <e-autocomplete-fields value="WORK_ID"></e-autocomplete-fields>
+            </ejs-autocomplete>
+            <ejs-textbox type="text" id="txtWorkId" cssClass="d-none"></ejs-textbox>
+        </div>
+        <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Description</label>
+        <div class="col-sm-4 align-self-center">
+            @Model.PROJECT_INFO.DESCRIPTION
+        </div>
+    </div>
+
+    <div class="mx-0 row bprder border-bottom">
+        <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Job ID</label>
+        <div class="col-sm-4 align-self-center">
+            <h4>
+                @Model.PROJECT_INFO.JOB_ID
+            </h4>
+        </div>
+        <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Vessel Name</label>
+        <div class="col-sm-4 align-self-center">
+            <h4>
+                @Model.PROJECT_INFO.VESSEL_NAME_KR
+            </h4>
+        </div>
+    </div>
+
+    <div class="mx-0 row bprder border-bottom">
+        <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Project ID</label>
+        <div class="col-sm-4 align-self-center">
+            <h4>
+                @Model.PROJECT_INFO.PROJECT_ID
+            </h4>
+        </div>
+        <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Project Title</label>
+        <div class="col-sm-4 align-self-center">
+            @Model.PROJECT_INFO.PROJECT_TITLE
+        </div>
+    </div>
+
+    <div class="mx-0 row bprder border-bottom">
+        <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Term of Project</label>
+        <div class="col-sm-4 align-self-center">
+            @Model.PROJECT_INFO.TERM_OF_PROJECT
+        </div>
+        <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Project Total Amount</label>
+        <div class="col-sm-4 align-self-center">
+            @Model.PROJECT_INFO.CURRENCY_SYMBOL
+            @string.Format("{0:#,0}",Model.PROJECT_INFO.PROJECT_TOTAL_AMOUNT)
+        </div>
+    </div>
+
+    <div class="mx-0 row bprder border-bottom">
+        <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Surveyor (PM)</label>
+        <div class="col-sm-10 align-self-center">
+            @{
+                if (Model.PROJECT_PIC != null)
+                {
+                    foreach (TNAV_PROJECT_PIC pic in Model.PROJECT_PIC)
+                    {
+                        if (pic.PROJECT_POSTION == "PM")
+                        {
+                            <span>@pic.USRE_NAME_EN (@pic.SUR_NO) ,</span>
+                        }
+                    }
+                }
+            }
+        </div>
+    </div>
+
+    <div class="mx-0 row bprder border-bottom">
+        <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Surveyor (Working Group)</label>
+        <div class="col-sm-10 align-self-center">
+            @{
+                if (Model.PROJECT_PIC != null)
+                {
+                    foreach (TNAV_PROJECT_PIC pic in Model.PROJECT_PIC)
+                    {
+                        if (pic.PROJECT_POSTION == "PIC")
+                        {
+                            <span>@pic.USRE_NAME_EN (@pic.SUR_NO) ,</span>
+                        }
+                    }
+                }
+            }
+        </div>
+    </div>
+
+    <form id="frmDisProjectPlanning" asp-controller="DisProjectPlanning" asp-action="CreatePlnnning" method="post">
+        <div class="mx-0 row bprder border-bottom">
+            <label class="col-sm-2 col-form-label text-end fw-bolder bg-create-title">Surveyor (PIC)</label>
+            <div class="col-sm-4 align-self-center">
+                <ejs-dropdownlist id="ddlSurveyor" ejs-for="DIS_PLANNING.SURVEYOR" dataSource="@ViewBag.PicList" cssClass="inputable" placeholder="Select PIC...">
+                    <e-dropdownlist-fields text="Name" value="Value"></e-dropdownlist-fields>
+                </ejs-dropdownlist>
+            </div>
+        </div>
+
+        <div class="mx-0 row bprder border-bottom">
+            <label class="col-1 col-form-label text-end border-end fw-bolder bg-create-title">Inspection<br /> Plan</label>
+            <div class="col-1 p-0 bg-create-title">
+                <div class="col-sm-12">
+                    <div class="border-bottom fw-bolder ps-1" style="height:42px;">Commencement Date</div>
+                    <div class="border-bottom fw-bolder ps-1" style="height:42px;">Compeleted<br /> Date</div>
+                    <div class=" fw-bolder ps-1" style="height:42px;">Next Date</div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="pt-1">
+                    <ejs-datepicker id="dpCommencement" ejs-for="DIS_PLANNING.START_DATE" format="yyyy-MM-dd" placeholder="Commencement Date..." cssClass="inputable"></ejs-datepicker>
+                </div>
+                <div class="pt-1">
+                    <ejs-datepicker id="dpCompeleted" ejs-for="DIS_PLANNING.END_DATE" format="yyyy-MM-dd" placeholder="Compeleted Date..." cssClass="inputable"></ejs-datepicker>
+                </div>
+                <div class="pt-1">
+                    <div class="row">
+                        <div class="col-4 align-self-center text-end">
+                            Inspection Period
+                        </div>
+                        <div class="col-8">
+                            <ejs-numerictextbox type="text" id="txtNextDate" ejs-for="DIS_PLANNING.NEXT_DATE" format="###,###" min="0" cssClass="e-outline text-left inputable"></ejs-numerictextbox>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 align-self-end pb-2">
+                Next inspection date due <span class="fw-bold text-danger">@ViewBag.NextDate</span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div>
+            <input type="text" asp-for="PROJECT_INFO.PROJECT_IDX" id="txtProjectIdx" value="@Model.PROJECT_INFO.PROJECT_IDX" class="d-none" />
+            <input type="text" asp-for="PROJECT_INFO.WORK_IDX" id="txtProjectIdx" value="@Model.PROJECT_INFO.WORK_IDX" class="d-none" />
+        </div>
+    </form>
+
+    <div class="pt-2 px-3">
+        <div class="float-start row g-0">
+            <div class="col-auto pe-2">
+                <a id="btnShowLog" class="btn btn-success btn-medium rounded-pill waves-effect waves-light btn-medium" style="width:120px;">Show Log</a>
+            </div>
+            <div class="col-auto pe-2">
+            </div>
+            <div class="col-auto">
+            </div>
+        </div>
+        <div class="float-end row g-0">
+            <div class="col-auto pe-2">
+            </div>
+            <div class="col-auto pe-2">
+                <button id="btnSave" form="frmDisProjectPlanning" class="btn btn-primary  rounded-pill waves-effect waves-light btn-medium" type="submit">SAVE</button>
+            </div>
+            <div class="col-auto">
+                <a asp-controller="DisProjectMonitoring" asp-action="Index" id="btnList" class="btn btn-primary rounded-pill waves-effect waves-light btn-medium">LIST</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function OnAutoComplateProjectIdChange(args) {
+            if (args.value.length >= 2) {
+                window.location.href = "/DisProjectPlanning/DetailPlanning/" + args.itemData.WORK_IDX;
+            }
+        }
+    </script>
+}
+
+    @section Scripts{
+    <script>
+        // Show Log Button
+        $("#btnShowLog").click(function () {
+            var W = (screen.availWidth * 0.5);
+            var H = 750;
+
+            var popupX = (screen.availWidth / 2) - (W / 2);
+            var popupY = (screen.availHeight / 2) - (H / 2);
+
+            var opt = "status=no,width=" + W + "px, height=" + H + "px, left=" + popupX + ", top=" + popupY + ",scrollbars=yes";
+            var popup = window.open('@Url.Action("ShowLog", "Common", new{id = Model.PROJECT_INFO.WORK_IDX, platform = "DIS"})', 'LogList', opt);
+
+            popup.opener = window;
+            popup.focus();
+        });
+    </script>
+}
